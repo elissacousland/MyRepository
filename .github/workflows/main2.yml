@@ -1,0 +1,20 @@
+name: Manual Test
+
+on:
+  workflow_dispatch:
+
+jobs:
+  hello:
+
+    runs-on: ubuntu-latest
+
+    steps:
+
+      - name: Say hello
+        run: echo Hello Svetlana!
+
+      - name: Show date
+        run: date
+
+      - name: Show current user
+        run: whoami
