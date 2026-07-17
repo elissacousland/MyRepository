@@ -1,0 +1,43 @@
+# Простой пример GitHub Actions для знакомства с workflow
+
+# Имя workflow (сценария)
+name: Hello, workflow!
+
+# Определяет, когда запускать workflow
+on:
+
+  # Запускать при git push в ветку main
+  push:
+    branches: [ "main" ]
+
+  # Запускать при создании Pull Request в ветку main
+  pull_request:
+    branches: [ "main" ]
+
+  # Разрешить запуск вручную через вкладку Actions
+  workflow_dispatch:
+
+# Список задач (jobs)
+jobs:
+
+  # Задача с именем build
+  build:
+
+    # На какой машине выполнять задачу
+    runs-on: ubuntu-slim
+
+    # Шаги, которые будут выполнены по порядку
+    steps:
+
+      # Скачать код репозитория на runner
+      - uses: actions/checkout@v4
+
+      # Выполнить одну команду
+      - name: Выполнить одну команду
+        run: echo Hello, world!
+
+      # Выполнить несколько команд подряд
+      - name: Выполнить несколько команд
+        run: |
+          echo Add other actions to build,
+          echo test, and deploy your project.
