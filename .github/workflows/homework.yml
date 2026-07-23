@@ -1,0 +1,95 @@
+# name - имя workflow во вкладке Actions
+# └── on — когда запускать этот workflow?
+#     └── jobs — какие задачи выполнить
+#         └── job
+#             ├── runs-on — где выполнить
+#             └── steps — что именно делать
+
+# название  во вкладке Actions
+name: GitHub Actions Homework
+
+on:
+  # запускает workflow вручную
+  workflow_dispatch:
+
+  # автоматически при git push
+  push:
+    branches:
+      - main
+
+jobs:
+  # Первая job
+  create-file: #  внутреннее имя job
+    name: Create and upload file # имя которое будет видно в GitHub
+    runs-on: ubuntu-latest
+
+    steps:
+      # первый шаг
+      - name: Download repository
+        uses: actions/checkout@v4 # скачивает файлы репозитория на runner
+
+      # второй шаг
+      - name: Create result file # создаёт папку result и файл result.txt
+        run: |
+          mkdir -p result
+          echo "Hello from GitHub Actions!" > result/result.txt
+          echo "This file was created by the first job." >> result/result.txt
+          echo "Workflow run number: ${{ github.run_number }}" >> result/result.txt
+
+      # третий шаг
+      - name: Show file content # показывает содержимое созданного файла в логах
+        run: cat result/result.txt
+
+      # четвертый шаг
+      - name: Use GitHub Secret # выводит секрет в лог и дописывает его в result.txt
+        run: |
+          echo "The secret value is: ${{ secrets.MY_SECRET }}"
+          echo "Secret: ${{ secrets.MY_SECRET }}" >> result/result.txt  
+          
+      # пятый шаг
+      - name: Upload artifact # загружает папку result как artifact
+        uses: actions/upload-artifact@v4
+        with:
+          # название artifact на странице GitHub Actions
+          name: homework-result
+
+          # что именно загрузить
+          path: result
+
+  # Вторая job
+  check-file:
+    name: Download and check file
+    runs-on: ubuntu-latest
+
+    # вторая job начнётся только после успешного
+    # завершения первой
+    needs: create-file
+
+    steps:
+      #  первый шаг
+      - name: Download artifact
+        uses: actions/download-artifact@v4 # скачивает artifact созданный первой job
+        with:
+          # Имя должно совпадать с именем,
+          # указанным при upload-artifact.
+          name: homework-result
+          path: downloaded-result # папка в которую будет скачано
+
+      #  второй шаг
+      # показывает что скачано
+      - name: Show downloaded files
+        run: ls -R downloaded-result
+
+      #  третий шаг
+      # читает содержимое
+      - name: Read downloaded file
+        run: cat downloaded-result/result.txt
+
+      # четвертый шаг
+      # сообщение об успешном завершении второй job
+      - name: Finish homework
+        run: echo "The second job finished successfully!"
+
+      # преднамеренная ошибка
+      # - name: Intentional error
+      #   run: exit 1
