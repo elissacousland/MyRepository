@@ -92,4 +92,4 @@ jobs:
 
       # преднамеренная ошибка
       - name: Intentional error
-        run: exit 
+        run: exit 1
