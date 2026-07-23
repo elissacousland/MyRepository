@@ -91,5 +91,5 @@ jobs:
         run: echo "The second job finished successfully!"
 
       # преднамеренная ошибка
-      - name: Intentional error
-        run: exit 1
+      # - name: Intentional error
+      #   run: exit 1
